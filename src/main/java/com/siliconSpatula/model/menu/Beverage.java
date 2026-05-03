@@ -6,6 +6,7 @@ import java.util.Map;
 import com.siliconSpatula.model.ApplianceType;
 import com.siliconSpatula.model.Ingredient;
 import com.siliconSpatula.model.MenuItem;
+import com.siliconSpatula.model.menu.Beverage.HotDrink;
 
 public abstract class Beverage extends MenuItem {
 
@@ -18,8 +19,8 @@ public abstract class Beverage extends MenuItem {
             super(name, price, 3, ApplianceType.AIRPOT);
         }
 
-        public static class Coffee extends HotDrink {
-            public Coffee() { super("Coffee", 3.50); }
+        public static class Latte extends HotDrink {
+            public Latte() { super("Latte", 4.00); }
 
             @Override
             public Map<Ingredient, Integer> getRequiredIngredients() {
@@ -30,7 +31,23 @@ public abstract class Beverage extends MenuItem {
                 return req;
             }
 
-            @Override public String getSaveToken() { return "COFFEE"; }
+            @Override public String getSaveToken() { return "LATTE"; }
+        }
+
+        public static class Americano extends HotDrink {
+            public Americano() { super("Americano", 3.50); }
+
+            @Override
+            public Map<Ingredient, Integer> getRequiredIngredients() {
+                Map<Ingredient, Integer> req = new HashMap<>();
+                req.put(Ingredient.COFFEE_BEAN, 1);
+                req.put(Ingredient.WATER, 1);
+                req.put(Ingredient.MILK, 1);
+                req.put(Ingredient.SUGAR, 1);
+                return req;
+            }
+
+            @Override public String getSaveToken() { return "AMERICANO"; }
         }
 
         public static class Tea extends HotDrink {
@@ -61,6 +78,7 @@ public abstract class Beverage extends MenuItem {
                 Map<Ingredient, Integer> req = new HashMap<>();
                 req.put(Ingredient.COLA_SYRUP, 1);
                 req.put(Ingredient.WATER, 1);
+                req.put(Ingredient.SUGAR, 1);
                 return req;
             }
 
@@ -78,6 +96,33 @@ public abstract class Beverage extends MenuItem {
             }
 
             @Override public String getSaveToken() { return "WATER"; }
+        }
+
+        public static class Sprite extends ColdDrink {
+            public Sprite() { super("Sprite", 2.00); }
+
+            @Override
+            public Map<Ingredient, Integer> getRequiredIngredients() {
+                Map<Ingredient, Integer> req = new HashMap<>();
+                req.put(Ingredient.WATER, 1);
+                req.put(Ingredient.SUGAR, 1);
+                return req;
+            }
+
+            @Override public String getSaveToken() { return "SPRITE"; }
+        }
+
+        public static class ColaZero extends ColdDrink {
+            public ColaZero() { super("Cola Zero", 2.00); }
+
+            @Override
+            public Map<Ingredient, Integer> getRequiredIngredients() {
+                Map<Ingredient, Integer> req = new HashMap<>();
+                req.put(Ingredient.WATER, 1);
+                return req;
+            }
+
+            @Override public String getSaveToken() { return "COLAZERO"; }
         }
     }
 }
