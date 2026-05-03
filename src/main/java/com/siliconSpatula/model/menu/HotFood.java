@@ -1,34 +1,25 @@
 package com.siliconSpatula.model.menu;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.siliconSpatula.model.ApplianceType;
 import com.siliconSpatula.model.Ingredient;
 import com.siliconSpatula.model.MenuItem;
 
-import java.util.HashMap;
-import java.util.Map;
-
-/**
- * Abstract superclass for all hot-food items cooked on the Grill or AirPot.
- * HotFood items have a prepTimeSecs of 3 seconds (as required by brief).
- */
 public abstract class HotFood extends MenuItem {
 
-    public HotFood(String name, double price, ApplianceType applianceType) {
-        super(name, price, 3, applianceType); // 3-second cook time for hot food
+    public HotFood(String name, double price) {
+        super(name, price, 3, ApplianceType.GRILL); // 3-second cook time for hot food
     }
 
-    // ─────────────────────────────────────────────
-    //  Concrete HotFood subclasses (inner classes)
-    // ─────────────────────────────────────────────
-
-    /** Classic beef burger – requires BUN + BEEF_PATTY + LETTUCE + TOMATO + CHEESE + PICKLE */
     public static class Burger extends HotFood {
-        public Burger() { super("Burger", 8.50, ApplianceType.GRILL); }
+        public Burger() { super("Burger", 8.50); }
 
         @Override
         public Map<Ingredient, Integer> getRequiredIngredients() {
             Map<Ingredient, Integer> req = new HashMap<>();
-            req.put(Ingredient.BUN, 1);
+            req.put(Ingredient.BUN, 2);
             req.put(Ingredient.BEEF_PATTY, 1);
             req.put(Ingredient.LETTUCE, 1);
             req.put(Ingredient.TOMATO, 1);
@@ -40,24 +31,21 @@ public abstract class HotFood extends MenuItem {
         @Override public String getSaveToken() { return "BURGER"; }
     }
 
-    /** Chicken strips – BUN + CHICKEN_STRIP + LETTUCE */
     public static class ChickenStrips extends HotFood {
-        public ChickenStrips() { super("Chicken Strips", 7.00, ApplianceType.GRILL); }
+        public ChickenStrips() { super("Chicken Strips", 7.00); }
 
         @Override
         public Map<Ingredient, Integer> getRequiredIngredients() {
             Map<Ingredient, Integer> req = new HashMap<>();
             req.put(Ingredient.CHICKEN_STRIP, 3);
-            req.put(Ingredient.LETTUCE, 1);
             return req;
         }
 
         @Override public String getSaveToken() { return "CHICKEN_STRIPS"; }
     }
 
-    /** KFC-style Twister wrap – LAVASH + CHICKEN_STRIP + LETTUCE + TOMATO + MAYO */
     public static class Twister extends HotFood {
-        public Twister() { super("Twister Wrap", 9.00, ApplianceType.GRILL); }
+        public Twister() { super("Twister Wrap", 9.00); }
 
         @Override
         public Map<Ingredient, Integer> getRequiredIngredients() {
@@ -73,9 +61,8 @@ public abstract class HotFood extends MenuItem {
         @Override public String getSaveToken() { return "TWISTER"; }
     }
 
-    /** Fries – POTATO + OIL (cooked in AirPot) */
     public static class Fries extends HotFood {
-        public Fries() { super("Fries", 4.00, ApplianceType.AIRPOT); }
+        public Fries() { super("Fries", 4.00); }
 
         @Override
         public Map<Ingredient, Integer> getRequiredIngredients() {

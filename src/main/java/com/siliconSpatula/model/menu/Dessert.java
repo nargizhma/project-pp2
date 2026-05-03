@@ -1,23 +1,18 @@
 package com.siliconSpatula.model.menu;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.siliconSpatula.model.ApplianceType;
 import com.siliconSpatula.model.Ingredient;
 import com.siliconSpatula.model.MenuItem;
 
-import java.util.HashMap;
-import java.util.Map;
-
-/**
- * Abstract superclass for dessert items.
- * Desserts are prepared in the AirPot and take 4 seconds.
- */
 public abstract class Dessert extends MenuItem {
 
     public Dessert(String name, double price) {
-        super(name, price, 4, ApplianceType.AIRPOT);
+        super(name, price, 4, ApplianceType.OVEN);
     }
 
-    /** Chocolate muffin cake – HEAVY_CREAM + DARK_CHOCOLATE + BUTTER + SUGAR */
     public static class MuffinCake extends Dessert {
         public MuffinCake() { super("Muffin Cake", 5.50); }
 
@@ -34,7 +29,6 @@ public abstract class Dessert extends MenuItem {
         @Override public String getSaveToken() { return "MUFFIN_CAKE"; }
     }
 
-    /** Cheesecake – HEAVY_CREAM + BUTTER + SUGAR + CHEESE */
     public static class Cheesecake extends Dessert {
         public Cheesecake() { super("Cheesecake", 6.00); }
 

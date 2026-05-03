@@ -1,16 +1,12 @@
 package com.siliconSpatula.model.menu;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.siliconSpatula.model.ApplianceType;
 import com.siliconSpatula.model.Ingredient;
 import com.siliconSpatula.model.MenuItem;
 
-import java.util.HashMap;
-import java.util.Map;
-
-/**
- * Abstract superclass for dipping / side sauces.
- * Dispensed instantly (1 second) via SauceDispenser.
- */
 public abstract class Sauce extends MenuItem {
 
     public Sauce(String name, double price) {
