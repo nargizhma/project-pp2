@@ -1,5 +1,11 @@
 package com.siliconSpatula.ui;
 
+import java.io.IOException;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Map;
+import java.util.Set;
+
 import com.siliconSpatula.engine.RestaurantEngine;
 import com.siliconSpatula.fileio.FileManager;
 import com.siliconSpatula.manager.InventoryManager;
@@ -14,57 +20,50 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
-import javafx.scene.layout.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextArea;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 
-import java.io.IOException;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Map;
-import java.util.Set;
-
-/**
- * Main JavaFX application window for The Silicon Spatula.
- *
- * 4 required zones:
- *   - Orders Panel   (queue + Cook/Stop buttons)
- *   - Inventory Panel (cash + all ingredient quantities)
- *   - Restock Panel  (dropdown + Buy button)
- *   - System Log     (scrolling TextArea + Save/Load buttons)
- *
- * All button lambdas call clean handler methods - no business logic inline.
- */
 public class DashboardUI extends Application {
 
     private final RestaurantEngine engine = new RestaurantEngine();
 
-    // Orders panel
+    // Orders section
+    //keep the screen synchronized with the order queue in the engine
     private final ObservableList<String> orderItems = FXCollections.observableArrayList();
     private final ListView<String>       orderList  = new ListView<>(orderItems);
 
-    // Inventory panel
+    // Inventory section
+    //table-like grid for ingredient quantities and cash
     private final GridPane inventoryGrid = new GridPane();
     private final Label    cashLabel     = new Label();
 
-    // Appliance status labels (shown in orders panel)
+    // Appliance status section
     private final Label grillStatus   = applianceStatusLabel("Grill");
     private final Label airpotStatus  = applianceStatusLabel("AirPot");
+    private final Label ovenStatus    = applianceStatusLabel("Oven");
     private final Label drinkStatus   = applianceStatusLabel("Drink Dispenser");
     private final Label sauceStatus   = applianceStatusLabel("Sauce Dispenser");
 
-    // Restock
+    //dropdown selection control
     private final ComboBox<Ingredient> restockDropdown = new ComboBox<>();
 
-    // Log
+    // scrollable log area for messages
     private final TextArea logArea = new TextArea();
 
     private static final DateTimeFormatter TIME_FMT = DateTimeFormatter.ofPattern("HH:mm:ss");
 
-    // ══════════════════════════════════════════════════════════════════════
 
     @Override
     public void start(Stage stage) {
@@ -78,8 +77,8 @@ public class DashboardUI extends Application {
 
         VBox rightPanel = new VBox(10, inventoryBox, restockBox);
         HBox topRow = new HBox(10, ordersPanel, rightPanel);
-        HBox.setHgrow(ordersPanel,  Priority.SOMETIMES);
-        HBox.setHgrow(rightPanel,   Priority.ALWAYS);
+        HBox.setHgrow(ordersPanel, Priority.SOMETIMES);
+        HBox.setHgrow(rightPanel,  Priority.ALWAYS);
         topRow.setPadding(new Insets(10));
 
         VBox root = new VBox(10, topRow, logBox);
@@ -97,13 +96,9 @@ public class DashboardUI extends Application {
 
         refreshUI();
         engine.startSimulation();
-        appendLog("Silicon Spatula is open!  Welcome to our restaurant dashboard.");
-        // appendLog("TIP: Different appliances can work simultaneously (e.g. Grill + Drink Dispenser).");
+        appendLog("Silicon Spatula is open! New orders arrive every 2-5 seconds.");
+        appendLog("TIP: Different appliances can run simultaneously (e.g. Grill + Drink Dispenser).");
     }
-
-    // ══════════════════════════════════════════════════════════════════════
-    //  Panel builders
-    // ══════════════════════════════════════════════════════════════════════
 
     private VBox buildOrdersPanel() {
         Label title = panelTitle("Orders Queue");
@@ -113,20 +108,21 @@ public class DashboardUI extends Application {
             "-fx-background-color: #16213e; -fx-control-inner-background: #16213e;" +
             "-fx-text-fill: #e0e0e0; -fx-border-color: #0f3460; -fx-border-width: 1;");
 
-        // Appliance status row
+        // Appliance status block
         Label statusTitle = new Label("Appliance Status:");
         statusTitle.setTextFill(Color.web("#aaaaaa"));
         statusTitle.setFont(Font.font("Monospaced", 11));
         HBox statusRow1 = new HBox(12, grillStatus, airpotStatus);
-        HBox statusRow2 = new HBox(12, drinkStatus, sauceStatus);
-        VBox statusBox = new VBox(3, statusTitle, statusRow1, statusRow2);
+        HBox statusRow2 = new HBox(12, ovenStatus,  drinkStatus);
+        HBox statusRow3 = new HBox(12, sauceStatus);
+        VBox statusBox  = new VBox(3, statusTitle, statusRow1, statusRow2, statusRow3);
         statusBox.setPadding(new Insets(4, 0, 4, 0));
 
         Button cookBtn = styledButton("Cook Next Order", "#e94560", "#c73652");
         cookBtn.setMaxWidth(Double.MAX_VALUE);
         cookBtn.setOnAction(e -> engine.handleCookNextOrder());
 
-        Button stopBtn = styledButton("Stop", "#f5a623", "#d4841a");
+        Button stopBtn = styledButton("Stop & Save", "#f5a623", "#d4841a");
         stopBtn.setMaxWidth(Double.MAX_VALUE);
         stopBtn.setOnAction(e -> handleStop());
 
@@ -168,11 +164,14 @@ public class DashboardUI extends Application {
             "-fx-background-color: #16213e; -fx-text-fill: #e0e0e0;" +
             "-fx-border-color: #0f3460; -fx-border-width: 1;");
 
-        Label costLabel = new Label(String.format(
-            "Cost: $%.2f per restock  |  Adds +%d units",
-            InventoryManager.RESTOCK_COST, InventoryManager.RESTOCK_AMOUNT));
+        // shows the cost and quantity added for the currently selected ingredient
+        Label costLabel = new Label(formatRestockCost(Ingredient.BUN));
         costLabel.setTextFill(Color.web("#aaaaaa"));
         costLabel.setFont(Font.font("Monospaced", 11));
+        restockDropdown.setOnAction(e -> {
+            Ingredient selected = restockDropdown.getValue();
+            if (selected != null) costLabel.setText(formatRestockCost(selected));
+        });
 
         Button buyBtn = styledButton("Buy Ingredient", "#0f3460", "#1a4a8a");
         buyBtn.setMaxWidth(Double.MAX_VALUE);
@@ -210,14 +209,10 @@ public class DashboardUI extends Application {
         return box;
     }
 
-    // ══════════════════════════════════════════════════════════════════════
-    //  Handler methods (called from lambdas)
-    // ══════════════════════════════════════════════════════════════════════
-
+    //methods called by button lambdas
     private void handleStop() {
         engine.stopSimulation();
-        // handleSave();  // Optional: auto-save on stop/exit
-         appendLog("Order stopped. Thanks for visiting The Silicon Spatula!");
+        handleSave();
     }
 
     private void handleSave() {
@@ -242,9 +237,6 @@ public class DashboardUI extends Application {
         }
     }
 
-    // ══════════════════════════════════════════════════════════════════════
-    //  UI refresh
-    // ══════════════════════════════════════════════════════════════════════
 
     public void refreshUI() {
         Platform.runLater(() -> {
@@ -262,14 +254,16 @@ public class DashboardUI extends Application {
 
                 Label qtyLabel = new Label(String.valueOf(entry.getValue()));
                 qtyLabel.setFont(Font.font("Monospaced", FontWeight.BOLD, 12));
-                qtyLabel.setTextFill(entry.getValue() <= 2 ? Color.web("#e94560") : Color.web("#b0e0b0"));
+                qtyLabel.setTextFill(entry.getValue() <= 2
+                    ? Color.web("#e94560")
+                    : Color.web("#b0e0b0"));
 
                 inventoryGrid.add(nameLabel, 0, row);
                 inventoryGrid.add(qtyLabel,  1, row);
                 row++;
             }
 
-            // Order queue list
+            // Order list
             orderItems.clear();
             for (Order order : engine.getOrderQueue()) {
                 orderItems.add(order.toString());
@@ -278,19 +272,17 @@ public class DashboardUI extends Application {
                 orderItems.add("  (no pending orders)");
             }
 
-            // Appliance status labels
+            // Appliance status
             Set<ApplianceType> busy = engine.getBusyAppliances();
-            updateApplianceLabel(grillStatus,  "Grill",          busy.contains(ApplianceType.GRILL));
-            updateApplianceLabel(airpotStatus, "AirPot",         busy.contains(ApplianceType.AIRPOT));
-            updateApplianceLabel(drinkStatus,  "Drink Dispenser",busy.contains(ApplianceType.DRINK_DISPENSER));
-            updateApplianceLabel(sauceStatus,  "Sauce Dispenser",busy.contains(ApplianceType.SAUCE_DISPENSER));
+            updateApplianceLabel(grillStatus, "Grill", busy.contains(ApplianceType.GRILL));
+            updateApplianceLabel(airpotStatus, "AirPot", busy.contains(ApplianceType.AIRPOT));
+            updateApplianceLabel(ovenStatus, "Oven", busy.contains(ApplianceType.OVEN));
+            updateApplianceLabel(drinkStatus, "Drink Dispenser", busy.contains(ApplianceType.DRINK_DISPENSER));
+            updateApplianceLabel(sauceStatus, "Sauce Dispenser", busy.contains(ApplianceType.SAUCE_DISPENSER));
         });
     }
 
-    // ══════════════════════════════════════════════════════════════════════
-    //  Helpers
-    // ══════════════════════════════════════════════════════════════════════
-
+    //helper methods
     public void appendLog(String message) {
         String ts = LocalTime.now().format(TIME_FMT);
         Platform.runLater(() -> {
@@ -314,6 +306,12 @@ public class DashboardUI extends Application {
         l.setFont(Font.font("Monospaced", 11));
         l.setTextFill(Color.web("#4caf50"));
         return l;
+    }
+
+    private String formatRestockCost(Ingredient ing) {
+        return String.format("Cost: $%.2f  |  Adds +%d units of %s",
+            ing.getRestockCost(), InventoryManager.RESTOCK_AMOUNT,
+            ing.name().replace("_", " "));
     }
 
     private Label panelTitle(String text) {
