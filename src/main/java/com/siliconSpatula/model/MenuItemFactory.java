@@ -1,18 +1,12 @@
 package com.siliconSpatula.model;
+import com.siliconSpatula.model.menu.Beverage;
+import com.siliconSpatula.model.menu.Dessert;
+import com.siliconSpatula.model.menu.HotFood;
+import com.siliconSpatula.model.menu.Sauce;
 
-import com.siliconSpatula.model.menu.*;
-
-/**
- * Factory that maps save-file tokens → concrete MenuItem instances.
- * Used during file load to reconstruct the correct subclass.
- * Add a new case here whenever a new MenuItem subclass is added.
- */
 public class MenuItemFactory {
 
-    /**
-     * Creates a fresh MenuItem from its save token.
-     * @throws IllegalArgumentException if the token is unknown.
-     */
+    //gets the menu item from the token (from file, when loading)
     public static MenuItem fromToken(String token) {
         switch (token.toUpperCase()) {
             case "BURGER":         return new HotFood.Burger();
@@ -21,10 +15,10 @@ public class MenuItemFactory {
             case "FRIES":          return new HotFood.Fries();
             case "MUFFIN_CAKE":    return new Dessert.MuffinCake();
             case "CHEESECAKE":     return new Dessert.Cheesecake();
-            case "COFFEE":         return new Beverage.Coffee();
-            case "TEA":            return new Beverage.Tea();
-            case "COLA":           return new Beverage.Cola();
-            case "WATER":          return new Beverage.Water();
+            case "COFFEE":         return new Beverage.HotDrink.Coffee();
+            case "TEA":            return new Beverage.HotDrink.Tea();
+            case "COLA":           return new Beverage.ColdDrink.Cola();
+            case "WATER":          return new Beverage.ColdDrink.Water();
             case "KETCHUP_SAUCE":  return new Sauce.KetchupSauce();
             case "MAYO_SAUCE":     return new Sauce.MayoSauce();
             case "BARBECUE_SAUCE": return new Sauce.BarbecueSauce();
@@ -33,7 +27,7 @@ public class MenuItemFactory {
         }
     }
 
-    /** Returns all possible orderable items (used for random order generation). */
+    //all menu items as a list (random generation for orders)
     public static MenuItem[] allItems() {
         return new MenuItem[]{
             new HotFood.Burger(),
@@ -42,10 +36,10 @@ public class MenuItemFactory {
             new HotFood.Fries(),
             new Dessert.MuffinCake(),
             new Dessert.Cheesecake(),
-            new Beverage.Coffee(),
-            new Beverage.Tea(),
-            new Beverage.Cola(),
-            new Beverage.Water(),
+            new Beverage.HotDrink.Coffee(),
+            new Beverage.HotDrink.Tea(),
+            new Beverage.ColdDrink.Cola(),
+            new Beverage.ColdDrink.Water(),
             new Sauce.KetchupSauce(),
             new Sauce.MayoSauce(),
             new Sauce.BarbecueSauce()
