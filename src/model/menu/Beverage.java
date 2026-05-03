@@ -78,7 +78,6 @@ public abstract class Beverage extends MenuItem {
                 Map<Ingredient, Integer> req = new HashMap<>();
                 req.put(Ingredient.COLA_SYRUP, 1);
                 req.put(Ingredient.WATER, 1);
-                req.put(Ingredient.SUGAR, 1);
                 return req;
             }
 
@@ -105,7 +104,6 @@ public abstract class Beverage extends MenuItem {
             public Map<Ingredient, Integer> getRequiredIngredients() {
                 Map<Ingredient, Integer> req = new HashMap<>();
                 req.put(Ingredient.WATER, 1);
-                req.put(Ingredient.SUGAR, 1);
                 req.put(Ingredient.SPRITE_SYRUP, 1);
                 return req;
             }
@@ -120,6 +118,7 @@ public abstract class Beverage extends MenuItem {
             public Map<Ingredient, Integer> getRequiredIngredients() {
                 Map<Ingredient, Integer> req = new HashMap<>();
                 req.put(Ingredient.WATER, 1);
+                req.put(Ingredient.COLAZERO_SYRUP, 1);
                 return req;
             }
 

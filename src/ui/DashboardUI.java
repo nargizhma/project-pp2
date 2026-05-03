@@ -121,7 +121,7 @@ public class DashboardUI extends Application {
         cookBtn.setMaxWidth(Double.MAX_VALUE);
         cookBtn.setOnAction(e -> engine.handleCookNextOrder());
 
-        Button stopBtn = styledButton("Stop & Save", "#f5a623", "#d4841a");
+        Button stopBtn = styledButton("Stop", "#f5a623", "#d4841a");
         stopBtn.setMaxWidth(Double.MAX_VALUE);
         stopBtn.setOnAction(e -> handleStop());
 
@@ -211,7 +211,6 @@ public class DashboardUI extends Application {
     //methods called by button lambdas
     private void handleStop() {
         engine.stopSimulation();
-        handleSave();
     }
 
     private void handleSave() {

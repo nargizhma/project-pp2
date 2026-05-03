@@ -66,7 +66,7 @@ public class InventoryManager {
 
     //restocking the ingredient and deducting the cost of restock from cash
     public void restock(Ingredient ingredient) throws InsufficientIngredientsException, InsufficientFundsException {
-        double cost = ingredient.getRestockCost();
+        double cost = ingredient.getRestockCost() * 10; //restock cost is for 10 items
         if (cash < cost) {
             throw new InsufficientFundsException(cost, cash);
         }

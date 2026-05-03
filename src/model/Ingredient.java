@@ -28,6 +28,7 @@ public enum Ingredient {
     TEA_LEAF        (2.50),
     WATER           (0.50),
     MILK            (2.00),
+    COLAZERO_SYRUP  (3.00),
     SPRITE_SYRUP    (3.00);
 
     private final double restockCost;
@@ -36,7 +37,7 @@ public enum Ingredient {
         this.restockCost = restockCost;
     }
 
-    //cost of ingredients for 10 item
+    //cost of ingredients per item
     public double getRestockCost() {
         return restockCost;
     }

@@ -76,7 +76,7 @@ public class RestaurantEngine {
     public void stopSimulation() {
         running = false;
         if (generatorTimeline != null) generatorTimeline.stop();
-        log("Simulation stopped. Safe to close.");
+        log("Simulation stopped. Save game and close the application.");
     }
 
     //random generator
@@ -249,7 +249,7 @@ public void handleCookNextOrder() {
             inventory.restock(ingredient);
             log("Restocked " + InventoryManager.RESTOCK_AMOUNT + "x "
                 + ingredient.name().replace("_", " ")
-                + "  (-$" + String.format("%.2f", ingredient.getRestockCost()) + ")");
+                + "  (-$" + String.format("%.2f", ingredient.getRestockCost() * 10) + ")");
         } catch (InsufficientFundsException ex) {
             log("ERROR: Cannot restock - " + ex.getMessage());
         } catch (InsufficientIngredientsException ex) {
