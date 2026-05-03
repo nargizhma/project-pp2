@@ -1,130 +1,167 @@
-# 🍔 The Silicon Spatula — Restaurant Tycoon
-### CSCI 1202 Programming Principles II — Team 7
+# Silicon Spatula – Restaurant Tycoon
+**Term Project – CSCI 1202 Programming Principles II · Spring 2026**
+
+A JavaFX simulation game where you manage a fast-food restaurant. Orders arrive automatically every few seconds, you cook them using available ingredients, restock when supplies run low, and keep the cash flowing.
 
 ---
 
-## JavaFX 26 Setup on macOS with VS Code
+## Requirements
 
-### Step 1 – Locate your JavaFX SDK
+- **Java 21 or higher** — check with `java -version`
+- **Maven 3.8 or higher** — check with `mvn -version`
 
-You said JavaFX 26 is already downloaded. Find the folder — it should look like:
-
-```
-/Users/<your-name>/javafx-sdk-26/
-```
-
-Inside it you should see a `lib/` folder containing `.jar` files like
-`javafx.controls.jar`, `javafx.graphics.jar`, etc.
+If you don't have Maven installed, see the installation steps below.
 
 ---
 
-### Step 2 – Add JARs to the `lib/` folder of this project
+## Installing Maven
 
-1. Create a `lib/` folder in the **root** of this project (next to `src/`).
-2. Copy **all `.jar` files** from your JavaFX SDK `lib/` folder into `lib/`.
+### macOS
+
+The easiest way is via Homebrew:
 
 ```bash
-cp /Users/<your-name>/javafx-sdk-26/lib/*.jar lib/
+brew install maven
 ```
 
-> VS Code's `settings.json` already tells it to pick up `lib/**/*.jar`.
+If you don't have Homebrew, install it first from [https://brew.sh](https://brew.sh), then run the command above.
+
+### Windows
+
+1. Download the **Binary zip archive** from [https://maven.apache.org/download.cgi](https://maven.apache.org/download.cgi)
+2. Extract it somewhere like `C:\Program Files\Maven`
+3. Add the `bin` folder to your system `PATH`:
+   - Search for **"Edit the system environment variables"** in the Start menu
+   - Click **Environment Variables**
+   - Under **System variables**, find `Path` → click **Edit** → **New**
+   - Add: `C:\Program Files\Maven\apache-maven-3.x.x\bin`
+4. Restart your terminal and verify with `mvn -version`
 
 ---
 
-### Step 3 – Edit `.vscode/launch.json`
+## How to Run
 
-Open `.vscode/launch.json` and replace the placeholder path:
+### Step 1 — Clone the repository
 
-```
---module-path /path/to/javafx-sdk-26/lib
-```
-
-with the **actual absolute path** to your JavaFX SDK lib folder, for example:
-
-```
---module-path /Users/anar/javafx-sdk-26/lib
+```bash
+git clone https://github.com/ADA-SITE-CSCI1202-Spring-2026/term-project-team-7.git
+cd teamprojectPP2
 ```
 
-Save the file.
+### Step 2 — Run the application
 
----
+**macOS / Linux:**
+```bash
+mvn javafx:run
+```
 
-### Step 4 – Install the Java Extension Pack in VS Code
+**Windows:**
+```bash
+mvn javafx:run
+```
 
-If not already installed, open VS Code and install:
-- **Extension Pack for Java** (by Microsoft)
+The command is the same on all platforms. Maven will automatically download JavaFX the first time — this may take a minute on the first run. After that it uses the cached version and starts instantly.
 
----
-
-### Step 5 – Run the project
-
-- Open the `SiliconSpatula` folder in VS Code.
-- Press **F5** (or go to Run → Start Debugging).
-- Select **"🍔 Run Silicon Spatula"** configuration.
-- The restaurant dashboard window should appear!
+> **Note:** Do not open individual `.java` files and try to run them. The project must be launched through Maven from the project root (the folder containing `pom.xml`).
 
 ---
 
 ## Project Structure
 
 ```
-SiliconSpatula/
-├── src/main/java/com/siliconSpatula/
-│   ├── model/
-│   │   ├── Ingredient.java        ← enum of all ingredients
-│   │   ├── ApplianceType.java     ← enum of appliance types
-│   │   ├── MenuItem.java          ← abstract base class
-│   │   ├── MenuItemFactory.java   ← factory for save/load reconstruction
-│   │   ├── Order.java             ← wraps a MenuItem with an ID
-│   │   └── menu/
-│   │       ├── HotFood.java       ← abstract + Burger, ChickenStrips, Twister, Fries
-│   │       ├── Dessert.java       ← abstract + MuffinCake, Cheesecake
-│   │       ├── Beverage.java      ← abstract + Coffee, Tea, Cola, Water
-│   │       └── Sauce.java         ← abstract + KetchupSauce, MayoSauce, BarbecueSauce
-│   ├── appliance/
-│   │   ├── IAppliance.java        ← interface: canProcess(), process()
-│   │   ├── Grill.java
-│   │   ├── AirPot.java
-│   │   ├── DrinkDispenser.java
-│   │   └── SauceDispenser.java
-│   ├── manager/
-│   │   ├── InventoryManager.java  ← encapsulated HashMap<Ingredient,Integer>
-│   │   └── InsufficientIngredientsException.java
-│   ├── engine/
-│   │   └── RestaurantEngine.java  ← simulation engine + Timeline
-│   ├── fileio/
-│   │   └── FileManager.java       ← save/load to silicon_spatula_save.txt
-│   └── ui/
-│       └── DashboardUI.java       ← JavaFX Application (4 panels)
-├── lib/                           ← place JavaFX JARs here
-├── .vscode/
-│   ├── settings.json
-│   └── launch.json
-└── README.md
+teamprojectPP2/
+├── pom.xml                                     # Maven config – manages JavaFX dependency
+├── README.md
+└── src/
+    └── appliance/
+    │   ├── AirPot.java                         
+    │   ├── DrinkDispenser.java                 
+    │   ├── Grill.java                          
+    │   ├── IAppliance.java                     
+    │   ├── Oven.java                           
+    │   └── SauceDispenser.java                 
+    ├── engine/
+    │   └── RestaurantEngine.java               
+    ├── fileio/
+    │   └── FileManager.java                    
+    ├── manager/
+    │   ├── InsufficientFundsException.java
+    │   ├── InsufficientIngredientsException.java
+    │   └── InventoryManager.java               
+    ├── model/
+    │   ├── menu/
+    │   │   ├── Beverage.java                   
+    │   │   ├── Dessert.java                    
+    │   │   ├── HotFood.java                    
+    │   │   └── Sauce.java                      
+    │   ├── ApplianceType.java                  
+    │   ├── Ingredient.java                     
+    │   ├── MenuItem.java                       
+    │   ├── MenuItemFactory.java                
+    │   └── Order.java                          
+    └── ui/
+        └── DashboardUI.java                    
 ```
 
 ---
 
-## How to Play
+## The Four UI Panels
 
-| Action | Description |
-|--------|-------------|
-| **Cook Next Order** | Polls the top order from the queue. Checks ingredients, cooks with a delay, then delivers. |
-| **Buy Ingredient** | Select ingredient from dropdown → click Buy. Costs $5.00, adds 10 units. |
-| **Save Game** | Writes cash, all ingredient quantities, and pending queue to `silicon_spatula_save.txt`. |
-| **Load Game** | Restores everything from the save file. |
-| **Stop & Save** | Stops the order generation timeline safely, then saves. **Use this before closing the window** to avoid file corruption. |
+### 1. Orders Queue
+Shows all pending customer orders in a live list. A new order is automatically generated every few seconds. Click **Cook Next Order** to process the order at the front of the queue. Successfully cooked orders earn you cash; failed orders (due to missing ingredients) are rejected and logged.
+
+### 2. Inventory
+Displays your current cash balance and the stock count of every ingredient. Updates immediately after every cook, restock, or file load.
+
+### 3. Restock
+Pick an ingredient from the dropdown and click **Buy Ingredient** to purchase 10 units and spend the matching amount of cash. If you don't have enough cash, the purchase is rejected and logged.
+
+### 4. System Log
+A scrolling live feed of everything happening in the restaurant — new orders, successful cooks, failed cooks with the specific missing ingredient, restocks, saves, and loads.
 
 ---
 
-## Save File Format
+## Ingredients & Recipes
 
-```
-# Silicon Spatula Save File
-MONEY,120.00
-INGREDIENT,BUN,10
-INGREDIENT,BEEF_PATTY,5
-...
-ORDER,1,BURGER
-ORDER,2,COLA
-```
+| Ingredient      | Restock cost (per 10) | Used in                                          |
+|-----------------|-----------------------|--------------------------------------------------|
+| Bun             | $2.50                 | Burger (×2)                                      |
+| Beef Patty      | $8.00                 | Burger (×1)                                      |
+| Chicken Strip   | $6.50                 | Chicken Strips (×3), Twister (×2)                |
+| Lettuce         | $1.50                 | Burger (×1), Twister (×1)                        |
+| Tomato          | $2.00                 | Burger (×1), Twister (×1)                        |
+| Cheese          | $3.50                 | Burger (×1), Cheesecake (×1)                     |
+| Pickle          | $1.50                 | Burger (×1)                                      |
+| Lavash          | $2.00                 | Twister (×1)                                     |
+| Potato          | $1.50                 | Fries (×2)                                       |
+| Oil             | $3.00                 | Fries (×1)                                       |
+| Ketchup         | $1.50                 | Ketchup Sauce (×1)                               |
+| Mayo            | $1.50                 | Mayo Sauce (×1), Twister (×1)                    |
+| Barbecue        | $2.00                 | Barbecue Sauce (×1)                              |
+| Heavy Cream     | $3.50                 | Muffin Cake (×1), Cheesecake (×1)                |
+| Dark Chocolate  | $4.50                 | Muffin Cake (×1)                                 |
+| Butter          | $2.50                 | Muffin Cake (×1), Cheesecake (×1)                |
+| Sugar           | $1.00                 | Muffin Cake (×1), Cheesecake (×2), Americano (×1)|
+| Cola Syrup      | $3.00                 | Cola (×1)                                        |
+| Cola Zero Syrup | $3.00                 | Cola Zero (×1)                                   |
+| Sprite Syrup    | $3.00                 | Sprite (×1)                                      |
+| Coffee Bean     | $5.50                 | Latte (×1), Americano (×1)                       |
+| Tea Leaf        | $2.50                 | Tea (×1)                                         |
+| Water           | $0.50                 | Latte (×1), Americano (×1), Tea (×1), Cola (×1), Cola Zero (×1), Sprite (×1), Water (×1) |
+| Milk            | $2.00                 | Latte (×1), Americano (×1)                       |
+
+**Menu prices:** Burger $8.50 · Chicken Strips $7.00 · Twister Wrap $9.00 · Fries $4.00 · Muffin Cake $5.50 · Cheesecake $6.00 · Latte $4.00 · Americano $3.50 · Tea $2.50 · Cola $2.00 · Cola Zero $2.00 · Sprite $2.00 · Water $1.00 · Ketchup $0.50 · Mayo $0.50 · Barbecue Sauce $0.75
+
+**Starting state:** 10 of every ingredient · $120.00 cash
+
+---
+
+## Save / Load
+
+Use the **Save** and **Load** buttons in the UI. The game state is written to `silicon_spatula_save.txt` in the project root directory. The file is plain text and saves:
+
+- All ingredient quantities
+- Current cash balance
+- The full pending order queue (in order, with item types preserved)
+
+Loading restores everything exactly as it was so you can resume the simulation where you left off.
